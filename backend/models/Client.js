@@ -1,0 +1,90 @@
+import { DataTypes } from "sequelize";
+
+export default (sequelize) =>{
+const Client = sequelize.define(
+    'Client',
+    {
+        id:{
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey:true
+        },
+        name:{
+            type: DataTypes.STRING(150),
+            allowNull:false
+        },
+        email:{
+            type:DataTypes.STRING(150),
+            allowNull:false,
+            validate:{
+                isEmail:true
+            }, 
+        },
+        phone:{
+            type:DataTypes.STRING(20),
+            allowNull:false
+        },
+        company:{
+            type:DataTypes.STRING(150),
+            allowNull:true
+        },
+        gstNumber:{
+            type:DataTypes.STRING(20),
+            allowNull:true
+        },
+        panNumber:{
+            type:DataTypes.STRING(20),
+            allowNull:true
+        },
+        billingAddress:{
+            type:DataTypes.TEXT,
+            allowNull:true
+        },
+        shippingAddress:{
+            type:DataTypes.TEXT,
+            allowNull:true
+        },
+        city:{
+            type:DataTypes.STRING(100),
+            allowNull:true
+        },
+        state:{
+            type:DataTypes.STRING(100),
+            allowNull:true
+        },
+        pincode:{
+            type:DataTypes.STRING(20),
+            allowNull:true
+        },
+        country:{
+            type:DataTypes.STRING(30),
+            defaultValue:'India'
+        },
+        totalDue:{
+            type:DataTypes.DECIMAL(15,2),
+            defaultValue:0
+        },
+        totalPaid:{
+            type:DataTypes.DECIMAL(15,2),
+            defaultValue:0
+        },
+        creditLimit:{
+            type:DataTypes.DECIMAL(15,2),
+            defaultValue:0
+        },
+        notes:{
+            type:DataTypes.STRING(200),
+            allowNull:true
+        },
+        isActive:{
+            type:DataTypes.BOOLEAN,
+            defaultValue:true
+        }
+    },
+    {
+        tableName:'clients',
+        paranoid:true
+    }
+) 
+return Client;
+};
