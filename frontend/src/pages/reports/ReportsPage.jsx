@@ -1295,8 +1295,8 @@ const statLabelS = {
 };
 
 const statValueS = {
-  fontSize: 'clamp(18px, 3vw, 20px)',
-  fontWeight: 700,
+  fontSize: 'clamp(15px, 1vw, 10px)',
+  fontWeight: 400,
   margin: 0,
 };
 

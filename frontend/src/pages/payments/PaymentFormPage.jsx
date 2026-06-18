@@ -21,7 +21,6 @@ const api = {
   getClients: () => clientService.getAll({ limit: 200 }).then(r => r.data),
   getInvoices: (clientId) => invoiceService.getAll({
     clientId,
-    status: "sent,partially_paid,overdue",
     limit: 100,
   }).then(r => r.data),
   getInvoice: (id) => invoiceService.getOne(id).then(r => r.data),

@@ -42,7 +42,12 @@ export const getPOs = async (req, res, next) => {
                 model: Client,
                 as: 'client',
                 attributes: ['id', 'name', 'company'],
-            }],
+            },
+          {
+            model: PurchaseOrderItem,  // ← yeh add karo
+            as: 'items',
+            attributes: ['unitPrice', 'quantity', 'gstAmount', 'totalPrice'],
+        }],
             limit,
             offset,
             order: [[sortBy, sortOrder]],

@@ -337,10 +337,10 @@ export function StatCard({ label, value, color, icon, sub }) {
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
         <div>
           <p style={{ margin:"0 0 6px", fontSize:13, color: tokens.textSub }}>{label}</p>
-          <p style={{ margin:0, fontSize:24, fontWeight:700, color: color || tokens.text }}>{value}</p>
+          <p style={{ margin:0, fontSize:20, fontWeight:500, color: color || tokens.text }}>{value}</p>
           {sub && <p style={{ margin:"4px 0 0", fontSize:12, color: tokens.muted }}>{sub}</p>}
         </div>
-        {icon && <span style={{ fontSize:26, opacity:.7 }}>{icon}</span>}
+        {/* {icon && <span style={{ fontSize:26, opacity:.7 }}>{icon}</span>} */}
       </div>
     </Card>
   );

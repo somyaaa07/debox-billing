@@ -62,29 +62,29 @@ export default function ClientDetailPage() {
         <h3 className="font-bold text-slate-900">
           Contact Details
         </h3>
-        <p className="text-xs text-slate-500">
+        <p className="text-[11px] text-slate-500">
           Client information
         </p>
       </div>
     </div>
-    <div className="flex items-start gap-4 p-3 rounded-2xl hover:bg-blue-50 transition-all duration-300">
-    <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-      <Mail size={16} className="text-[#4795fe]" />
-    </div>
+    <div className="flex items-start gap-4 p-1 rounded-2xl hover:bg-blue-50 transition-all duration-300">
+    {/* <div className="w-13 h-13 rounded-full bg-blue-100 flex items-center justify-center">
+      <Mail size={13} className="text-[#4795fe]" />
+    </div> */}
 
     <div>
       <p className="text-xs uppercase tracking-wider text-slate-400">
         Email
       </p>
 
-      <p className="text-slate-800 font-medium">
+      <p className="text-slate-800 font-medium text-[13px]">
         {client.email}
       </p>
     </div>
   </div>
   <div className="grid grid-cols-2 gap-4 mt- pt-4 border-t border-slate-100">
     <div className="rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 p-4 text-white">
-      <p className="text-xs uppercase tracking-widest">
+      <p className="text-[10px] uppercase tracking-widest">
         Total Paid
       </p>
 
@@ -94,11 +94,11 @@ export default function ClientDetailPage() {
     </div>
 
     <div className="rounded-2xl bg-gradient-to-r from-red-500 to-red-600 p-4 text-white">
-      <p className="text-xs uppercase tracking-widest">
+      <p className="text-[10px] uppercase tracking-widest">
         Outstanding
       </p>
 
-      <h3 className="text-sm font-bold mt-2">
+      <h3 className="text-sm font-bold fontsize-4 mt-2">
         {formatCurrency(client.totalDue)}
       </h3>
     </div>
@@ -156,10 +156,10 @@ export default function ClientDetailPage() {
                       key={inv.id}
                       className="border-t border-slate-100 hover:bg-blue-50 transition"
                     >
-                      <td className="px-6 py-4">
+                      <td className="px-3 py-4">
                         <Link
                           to={`/final-invoices/${inv.id}`}
-                          className="font-semibold text-[#4795fe]"
+                          className="font-medium text-[#4795fe] text-[11px]"
                         >
                           {inv.invoiceNumber}
                         </Link>

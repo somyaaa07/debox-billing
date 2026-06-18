@@ -93,7 +93,28 @@ function FinalInvoiceDetailWrapper() {
     />
   );
 }
-
+function PurchaseOrderFormWrapper() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  return (
+    <PurchaseOrderFormPage
+      poId={id}  // edit mode ke liye id pass hogi, create ke liye undefined
+      onSaved={() => navigate("/purchase-orders")}
+      onCancel={() => navigate(-1)}
+    />
+  );
+}
+function FinalInvoiceFormWrapper() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  return (
+    <FinalInvoiceFormPage
+      invoiceId={id}
+      onSaved={() => navigate("/final-invoices")}
+      onCancel={() => navigate(-1)}
+    />
+  );
+}
 // ─── App ──────────────────────────────────────────────────────────────────────
 
 export default function App() {
@@ -125,9 +146,9 @@ export default function App() {
           <Route path="/quotations/:id/edit" element={<QuotationFormPage />} />
 
           <Route path="/purchase-orders" element={<PurchaseOrdersPageWrapper />} />
-          <Route path="/purchase-orders/new" element={<PurchaseOrderFormPage />} />
+<Route path="/purchase-orders/new"      element={<PurchaseOrderFormWrapper />} />
           <Route path="/purchase-orders/:id" element={<PurchaseOrderDetailWrapper />} />
-          <Route path="/purchase-orders/:id/edit" element={<PurchaseOrderFormPage />} />
+<Route path="/purchase-orders/:id/edit" element={<PurchaseOrderFormWrapper />} />
 
           <Route path="/proforma-invoices" element={<ProformaInvoicesPage />} />
           <Route path="/proforma-invoices/new" element={<ProformaInvoiceFormPage />} />
@@ -135,9 +156,9 @@ export default function App() {
           <Route path="/proforma-invoices/:id/edit" element={<ProformaInvoiceFormPage />} />
 
           <Route path="/final-invoices" element={<FinalInvoicesPageWrapper />} />
-          <Route path="/final-invoices/new" element={<FinalInvoiceFormPage />} />
+<Route path="/final-invoices/new"      element={<FinalInvoiceFormWrapper />} />
           <Route path="/final-invoices/:id" element={<FinalInvoiceDetailWrapper />} />
-          <Route path="/final-invoices/:id/edit" element={<FinalInvoiceFormPage />} />
+<Route path="/final-invoices/:id/edit" element={<FinalInvoiceFormWrapper />} />
 
           <Route path="/payments" element={<PaymentsPage />} />
           <Route path="/payments/new" element={<PaymentFormPage />} />

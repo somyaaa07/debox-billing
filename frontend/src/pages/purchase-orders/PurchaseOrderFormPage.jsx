@@ -193,6 +193,9 @@ function PurchaseOrderFormInner({ poId, onSaved, onCancel }) {
         fd.append("status",          form.status);
         fd.append("notes",           form.notes);
         fd.append("shippingAddress", form.shippingAddress);
+        fd.append("subtotal",    totals.subtotal);
+fd.append("gstAmount",   totals.gst);
+fd.append("totalAmount", totals.total);
         fd.append("items",           JSON.stringify(itemsClean));
 
         if (isEdit) {
@@ -202,8 +205,13 @@ function PurchaseOrderFormInner({ poId, onSaved, onCancel }) {
         }
       } else {
         // JSON — no file attached
-        const payload = { ...form, items: itemsClean };
-        if (isEdit) {
+const payload = {
+  ...form,
+  items: itemsClean,
+  subtotal:    totals.subtotal,   // ← yeh add karo
+  gstAmount:   totals.gst,        // ← yeh add karo
+  totalAmount: totals.total,      // ← yeh add karo
+};        if (isEdit) {
           await purchaseOrderService.update(poId, payload);
         } else {
           await purchaseOrderService.create(payload);

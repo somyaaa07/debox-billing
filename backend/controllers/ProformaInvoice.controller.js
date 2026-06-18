@@ -5,6 +5,7 @@ import {
     ProformaInvoiceItem,
     Client,
     FinalInvoice,
+        FinalInvoiceItem,
     sequelize
 } from '../models/index.js';
 import { logActivity } from '../services/activity.service.js';
@@ -210,26 +211,43 @@ export const convertToFinalInvoice = async (req, res, next) => {
 
         if (!pi) {
             await t.rollback();
-            return res.status(404).json({
-                success: false,
-                message: 'PI not found'
-            });
+            return res.status(404).json({ success: false, message: 'PI not found' });
         }
 
         const invoiceNumber = await generateDocNumber('INV');
 
         const invoice = await FinalInvoice.create({
-    invoiceNumber,
-    clientId:          pi.clientId,
-    proformaInvoiceId: pi.id,
-    invoiceDate:       new Date(),        // ✅ add karo
-    dueDate:           new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 din baad
-    subtotal:          pi.subtotal,
-    gstAmount:         pi.gstAmount,
-    totalAmount:       pi.totalAmount,
-    dueAmount:         pi.dueAmount,
-    status:            'draft',
-}, { transaction: t });
+            invoiceNumber,
+            clientId:          pi.clientId,
+            proformaInvoiceId: pi.id,
+            invoiceDate:       new Date(),
+            dueDate:           new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            subtotal:          pi.subtotal,
+            gstAmount:         pi.gstAmount,
+            totalAmount:       pi.totalAmount,
+            dueAmount:         pi.dueAmount,
+            status:            'draft',
+        }, { transaction: t });
+
+        // ✅ PI ke items copy karke Final Invoice ke items bana rahe hain
+        if (pi.items && pi.items.length > 0) {
+            const itemsData = pi.items.map((item, i) => ({
+                finalInvoiceId: invoice.id,
+                productId:      item.productId,
+                description:    item.description,
+                hsnCode:        item.hsnCode,
+                quantity:       item.quantity,
+                unit:           item.unit,
+                unitPrice:      item.unitPrice,
+                gstRate:        item.gstRate,
+                cgstAmount:     item.cgstAmount,   // same name dono taraf
+                sgst:           item.sgstAmount,   // PI: sgstAmount → Final: sgst
+                igst:           item.igstAmount,   // PI: igstAmount → Final: igst
+                totalPrice:     item.totalPrice,
+                sortOrder:      i,
+            }));
+            await FinalInvoiceItem.bulkCreate(itemsData, { transaction: t });
+        }
 
         await pi.update({ status: 'converted', convertedAt: new Date() }, { transaction: t });
 

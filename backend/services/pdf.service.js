@@ -592,7 +592,7 @@ export const generateFinalInvoicePdf = async (invoice) => {
 };
 
 export const generateReceiptPdf = async (payment) => {
-  const doc     = new PDFDocument({ margin: 40, size: 'A4' });
+  const doc     = new PDFDocument({ margin: 40, size: 'A4', autoFirstPage: true });
   const company = getCompanyInfo();
 
   setupPage(doc);
@@ -610,36 +610,47 @@ export const generateReceiptPdf = async (payment) => {
 
   const y = 414;
 
-  doc.roundedRect(40, y, 515, 150, 4).fillAndStroke('#f4f8ff', '#c8d8f0');
+// ── Payment Details block — center me ──────────────────
+const blockW = 500;
+const blockX = (doc.page.width - blockW) / 2; // center
 
-  doc.fillColor(TEXT_DARK).fontSize(12).font('Helvetica-Bold')
-     .text('Payment Details', 52, y + 14);
+doc.roundedRect(blockX, y, blockW, 150, 4).fillAndStroke('#f4f8ff', '#c8d8f0');
 
-  const details = [
-    ['Payment Number',   payment.paymentNumber],
-    ['Payment Date',     formatDate(payment.paymentDate)],
-    ['Payment Mode',     payment.paymentMode?.replace('_', ' ').toUpperCase()],
-    ['Reference Number', payment.referenceNumber || 'N/A'],
-    ['Against Invoice',  payment.finalInvoice?.invoiceNumber || 'Advance Payment'],
-  ];
+doc.fillColor(TEXT_DARK).fontSize(15).font('Helvetica-Bold')
+   .text('Payment Details', blockX, y + 14, { width: blockW, align: 'center' });
 
-  details.forEach(([label, value], i) => {
-    doc.fillColor(TEXT_LIGHT).fontSize(9).font('Helvetica')
-       .text(label, 52, y + 38 + i * 19);
-    doc.fillColor(TEXT_DARK).font('Helvetica-Bold')
-       .text(value || '', 240, y + 38 + i * 19);
-  });
+const details = [
+  ['Payment Number',   payment.paymentNumber],
+  ['Payment Date',     formatDate(payment.paymentDate)],
+  ['Payment Mode',     payment.paymentMode?.replace('_', ' ').toUpperCase()],
+  ['Reference Number', payment.referenceNumber || 'N/A'],
+  ['Against Invoice',  payment.finalInvoice?.invoiceNumber || 'Advance Payment'],
+];
 
-  doc.roundedRect(310, y + 12, 230, 56, 4).fill(BLUE);
-  doc.fillColor('#bfdbfe').fontSize(9).font('Helvetica')
-     .text('AMOUNT RECEIVED', 322, y + 22);
-  doc.fillColor(WHITE).fontSize(18).font('Helvetica-Bold')
-     .text(formatCurrency(payment.amount), 322, y + 38);
+details.forEach(([label, value], i) => {
+  doc.fillColor(TEXT_LIGHT).fontSize(12).font('Helvetica')
+     .text(label, blockX + 20, y + 38 + i * 19, { width: 180 });
+  doc.fillColor(TEXT_DARK).font('Helvetica-Bold')
+     .text(value || '', blockX + 160, y + 38 + i * 19, { width: 210 });
+});
 
-  if (payment.notes) {
-    doc.fillColor(TEXT_LIGHT).fontSize(8).font('Helvetica')
-       .text(`Notes: ${payment.notes}`, 52, y + 135);
-  }
+// ── Amount box — block ke bahar neeche, BLACK, center me ──
+const amtBoxW = 200;
+const amtBoxX = (doc.page.width - amtBoxW) / 2;
+const amtBoxY = y + 160; // block ke thoda neeche
+
+doc.roundedRect(amtBoxX, amtBoxY, amtBoxW, 48, 4).fill(BLACK);
+doc.fillColor('#aaaaaa').fontSize(8).font('Helvetica')
+   .text('AMOUNT RECEIVED', amtBoxX, amtBoxY + 10, { width: amtBoxW, align: 'center' });
+doc.fillColor(WHITE).fontSize(15).font('Helvetica-Bold')
+   .text(formatCurrency(payment.amount), amtBoxX, amtBoxY + 24, { width: amtBoxW, align: 'center' });
+
+if (payment.notes) {
+  doc.fillColor(TEXT_LIGHT).fontSize(8).font('Helvetica')
+     .text(`Notes: ${payment.notes}`, blockX, amtBoxY + 62, { width: blockW, align: 'center' });
+}
+
+ 
 
   drawNotesTerms(doc, null, 'Thank you for your payment!');
   drawWaveFooter(doc);
