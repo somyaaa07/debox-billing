@@ -9,7 +9,7 @@ import {
 } from '../models/index.js';
 import { paginateResponse } from '../middleware/paginate.js';
 import { logActivity } from '../services/activity.service.js';
-import { generateQuotationPdf } from '../services/pdf.service.js';
+import { generateQuotationPdf } from '../services/pdf.service.mjs';
 import { sendEmail, emailTemplates } from '../services/email.service.js'; // FIX: added emailTemplates
 import { generateDocNumber } from '../utils/numberGenrate.js';          // FIX: correct filename numberGenerator
 

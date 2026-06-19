@@ -100,47 +100,72 @@ export const emailTemplates = {
     `,
   }),
 
-  proformaInvoice: (pi, companyName) => ({
-    subject: `Proforma Invoice ${pi.piNumber} from ${companyName}`,
-    html: `
-      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
-        <div style="background:#7c3aed;padding:24px;border-radius:8px 8px 0 0">
-          <h2 style="color:#fff;margin:0">${companyName}</h2>
-        </div>
-        <div style="background:#f8fafc;padding:24px;border:1px solid #e2e8f0;border-radius:0 0 8px 8px">
-          <p>Dear <strong>${pi.client?.name}</strong>,</p>
-          <p>Please find attached Proforma Invoice <strong>${pi.piNumber}</strong>.</p>
-          <table style="width:100%;border-collapse:collapse;margin:16px 0">
-            <tr>
-              <td style="padding:8px;color:#64748b">PI Number</td>
-              <td style="padding:8px;font-weight:bold">${pi.piNumber}</td>
-            </tr>
-            <tr style="background:#fff">
-              <td style="padding:8px;color:#64748b">Date</td>
-              <td style="padding:8px">${pi.piDate}</td>
-            </tr>
-            <tr>
-              <td style="padding:8px;color:#64748b">Total Amount</td>
-              <td style="padding:8px;font-weight:bold;color:#7c3aed">
-                &#8377;${parseFloat(pi.totalAmount || 0).toLocaleString('en-IN')}
-              </td>
-            </tr>
-            <tr style="background:#fff">
-              <td style="padding:8px;color:#64748b">Amount Due</td>
-              <td style="padding:8px;font-weight:bold;color:#dc2626">
-                &#8377;${parseFloat(pi.dueAmount || 0).toLocaleString('en-IN')}
-              </td>
-            </tr>
-          </table>
-          <p>Kindly arrange the advance payment to initiate the project.</p>
-          <p style="color:#64748b;font-size:13px">
-            This is an auto-generated email from BillFlow Pro.
-          </p>
-        </div>
-      </div>
-    `,
-  }),
+proformaInvoice: (pi, companyName) => {
+    const itemRows = (pi.items || []).map((item, i) => `
+        <tr style="${i % 2 === 0 ? '' : 'background:#fff'}">
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0">${item.description || '-'}</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;text-align:center">${item.quantity} ${item.unit || ''}</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;text-align:right">&#8377;${parseFloat(item.unitPrice || 0).toLocaleString('en-IN')}</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;text-align:right;font-weight:bold">&#8377;${parseFloat(item.totalPrice || 0).toLocaleString('en-IN')}</td>
+        </tr>
+    `).join('');
 
+    return {
+        subject: `Proforma Invoice ${pi.piNumber} from ${companyName}`,
+        html: `
+          <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+            <div style="background:#7c3aed;padding:24px;border-radius:8px 8px 0 0">
+              <h2 style="color:#fff;margin:0">${companyName}</h2>
+            </div>
+            <div style="background:#f8fafc;padding:24px;border:1px solid #e2e8f0;border-radius:0 0 8px 8px">
+              <p>Dear <strong>${pi.client?.name}</strong>,</p>
+              <p>Please find attached Proforma Invoice <strong>${pi.piNumber}</strong>.</p>
+
+              ${itemRows ? `
+              <table style="width:100%;border-collapse:collapse;margin:16px 0">
+                <thead>
+                  <tr style="background:#ede9fe">
+                    <td style="padding:8px;font-weight:bold;color:#64748b">Description</td>
+                    <td style="padding:8px;font-weight:bold;color:#64748b;text-align:center">Qty</td>
+                    <td style="padding:8px;font-weight:bold;color:#64748b;text-align:right">Rate</td>
+                    <td style="padding:8px;font-weight:bold;color:#64748b;text-align:right">Amount</td>
+                  </tr>
+                </thead>
+                <tbody>${itemRows}</tbody>
+              </table>
+              ` : ''}
+
+              <table style="width:100%;border-collapse:collapse;margin:16px 0">
+                <tr>
+                  <td style="padding:8px;color:#64748b">PI Number</td>
+                  <td style="padding:8px;font-weight:bold">${pi.piNumber}</td>
+                </tr>
+                <tr style="background:#fff">
+                  <td style="padding:8px;color:#64748b">Date</td>
+                  <td style="padding:8px">${pi.piDate}</td>
+                </tr>
+                <tr>
+                  <td style="padding:8px;color:#64748b">Total Amount</td>
+                  <td style="padding:8px;font-weight:bold;color:#7c3aed">
+                    &#8377;${parseFloat(pi.totalAmount || 0).toLocaleString('en-IN')}
+                  </td>
+                </tr>
+                <tr style="background:#fff">
+                  <td style="padding:8px;color:#64748b">Amount Due</td>
+                  <td style="padding:8px;font-weight:bold;color:#dc2626">
+                    &#8377;${parseFloat(pi.dueAmount || 0).toLocaleString('en-IN')}
+                  </td>
+                </tr>
+              </table>
+              <p>Kindly arrange the advance payment to initiate the project.</p>
+              <p style="color:#64748b;font-size:13px">
+                This is an auto-generated email from BillFlow Pro.
+              </p>
+            </div>
+          </div>
+        `,
+    };
+},
   finalInvoice: (invoice, companyName) => ({
     subject: `Invoice ${invoice.invoiceNumber} from ${companyName}`,
     html: `

@@ -116,7 +116,7 @@ export const createPI = async (req, res, next) => {
 
 // ─── Update PI ────────────────────────────────────────────────────
 export const updatePI = async (req, res, next) => {
-    const t = await sequelize.transaction(); // ✅ t define kiya
+    const t = await sequelize.transaction(); // ✅ 
     try {
         const pi = await ProformaInvoice.findByPk(req.params.id);
         if (!pi) {
@@ -281,7 +281,7 @@ export const downloadPdf = async (req, res, next) => {
             });
         }
 
-        const { generateProformaPdf } = await import('../services/pdf.service.js');
+        const { generateProformaPdf } = await import('../services/pdf.service.mjs');
         const pdfBuffer = await generateProformaPdf(pi);
 
         res.set({ 'Content-Type': 'application/pdf' });
@@ -297,34 +297,45 @@ export const downloadPdf = async (req, res, next) => {
 export const emailPI = async (req, res, next) => {
     try {
         const pi = await ProformaInvoice.findByPk(req.params.id, {
-            include: [{ model: Client, as: 'client' }]
+            include: [
+                { model: Client,              as: 'client' },
+                { model: ProformaInvoiceItem, as: 'items'  },
+            ]
         });
 
         if (!pi) {
-            return res.status(404).json({
+            return res.status(404).json({ success: false, message: 'PI not found' });
+        }
+        if (!pi.client?.email) {
+            return res.status(400).json({ success: false, message: 'Client has no email on file' });
+        }
+
+        const { generateProformaPdf } = await import('../services/pdf.service.mjs');
+        const { sendEmail, emailTemplates } = await import('../services/email.service.js');
+
+        const pdf = await generateProformaPdf(pi);
+        const { subject, html } = emailTemplates.proformaInvoice(
+            pi,
+            process.env.COMPANY_NAME || 'BillFlow Pro'
+        );
+
+        const result = await sendEmail({
+            to: pi.client.email,
+            subject,
+            html,
+            attachments: [{ filename: `${pi.piNumber}.pdf`, content: pdf }]
+        });
+
+        if (result.skipped || result.failed) {
+            return res.status(502).json({
                 success: false,
-                message: 'PI not found'
+                message: result.skipped
+                    ? 'SMTP not configured — check SMTP_USER/SMTP_PASS in .env'
+                    : `Email failed: ${result.error}`
             });
         }
 
-        const { generateProformaPdf } = await import('../services/pdf.service.js');
-        const { sendEmail }           = await import('../services/email.service.js');
-
-        const pdf = await generateProformaPdf(pi);
-
-        await sendEmail({
-            to:      pi.client.email,
-            subject: `PI ${pi.piNumber}`,
-            attachments: [{
-                filename: `${pi.piNumber}.pdf`,
-                content:  pdf
-            }]
-        });
-
-        res.json({
-            success: true,
-            message: 'Email sent successfully'
-        });
+        res.json({ success: true, message: 'Email sent successfully' });
 
     } catch (error) {
         next(error);

@@ -7,7 +7,7 @@ import {
     sequelize
 } from '../models/index.js';
 import { paginateResponse } from '../middleware/paginate.js';
-import { generateFinalInvoicePdf } from '../services/pdf.service.js';
+import { generateFinalInvoicePdf } from '../services/pdf.service.mjs';
 import { sendEmail } from '../services/email.service.js';
 import { generateDocNumber } from '../utils/numberGenrate.js';    // FIX 1: wrong filename
 

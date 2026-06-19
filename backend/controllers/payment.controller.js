@@ -4,7 +4,7 @@ import { Payment, FinalInvoice, Client, sequelize } from '../models/index.js';
 import { paginateResponse } from '../middleware/paginate.js';
 import { logActivity } from '../services/activity.service.js';
 import { generateDocNumber } from '../utils/numberGenrate.js';
-import { generateReceiptPdf } from '../services/pdf.service.js';
+import { generateReceiptPdf } from '../services/pdf.service.mjs';
 
 export const getPayments = async (req, res, next) => {
     try {
