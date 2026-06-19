@@ -2,8 +2,8 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const api = axios.create({
-  // baseURL: '/api/v1' ,
-  baseURL:'https://debox.ditbilling.store/api/v1',
+  baseURL: '/api/v1' ,
+  // baseURL:'https://debox.ditbilling.store/api/v1',
   timeout: 15000,
   headers: { 'Content-Type': 'application/json' }
 });
