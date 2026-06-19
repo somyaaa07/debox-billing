@@ -6,7 +6,7 @@ const UserModel =(sequelize)=>{
         'User',{
         id:{
             type:DataTypes.UUID,
-            defaultValue: DataTypes.UUID4,
+            defaultValue: DataTypes.UUIDV4,
             primaryKey:true,
         },
         name:{
