@@ -18,43 +18,40 @@ export const getDashboard = async (req, res, next) => {
     const startOfYear = new Date(now.getFullYear(), 0, 1);
 
     // Summary cards
-    const [totalRevenue] = await sequelize.query(`
-      SELECT COALESCE(SUM(paidAmount), 0) AS total
-      FROM final_invoice
-      WHERE deletedAt IS NULL
-    `);
+ const [totalRevenue] = await sequelize.query(`
+  SELECT COALESCE(SUM(paidAmount), 0) AS total
+  FROM final_invoices
+  WHERE deletedAt IS NULL
+`);
+const [totalDue] = await sequelize.query(`
+  SELECT COALESCE(SUM(dueAmount), 0) AS total
+  FROM final_invoices
+  WHERE deletedAt IS NULL
+`);
 
-    const [totalDue] = await sequelize.query(`
-      SELECT COALESCE(SUM(dueAmount), 0) AS total
-      FROM final_invoice
-      WHERE deletedAt IS NULL
-    `);
-
-    const [monthRevenue] = await sequelize.query(`
-      SELECT COALESCE(SUM(paidAmount), 0) AS total
-      FROM final_invoice
-      WHERE invoiceDate >= '${startOfMonth.toISOString().split('T')[0]}'
-      AND deletedAt IS NULL
-    `);
-
+const [monthRevenue] = await sequelize.query(`
+  SELECT COALESCE(SUM(paidAmount), 0) AS total
+  FROM final_invoices
+  WHERE invoiceDate >= '${startOfMonth.toISOString().split('T')[0]}'
+  AND deletedAt IS NULL
+`);
     const totalClients = await Client.count();
 
     const overdueInvoices = await FinalInvoice.count({
       where: { status: 'overdue' },
     });
 
-    // Monthly revenue chart (last 12 months)
-    const [monthlyRevenue] = await sequelize.query(`
-      SELECT 
-        DATE_FORMAT(invoiceDate, '%Y-%m') AS month,
-        COALESCE(SUM(paidAmount), 0) AS revenue,
-        COALESCE(SUM(totalAmount), 0) AS billed
-      FROM final_invoice
-      WHERE invoiceDate >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
-      AND deletedAt IS NULL
-      GROUP BY DATE_FORMAT(invoiceDate, '%Y-%m')
-      ORDER BY month ASC
-    `);
+const [monthlyRevenue] = await sequelize.query(`
+  SELECT 
+    DATE_FORMAT(invoiceDate, '%Y-%m') AS month,
+    COALESCE(SUM(paidAmount), 0) AS revenue,
+    COALESCE(SUM(totalAmount), 0) AS billed
+  FROM final_invoices
+  WHERE invoiceDate >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+  AND deletedAt IS NULL
+  GROUP BY DATE_FORMAT(invoiceDate, '%Y-%m')
+  ORDER BY month ASC
+`);
 
     // Recent documents
     const recentQuotations = await Quotation.findAll({
