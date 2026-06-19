@@ -30,14 +30,11 @@ const api = {
 // ─── Constants ────────────────────────────────────────────────────────────────
 const PAYMENT_MODES = [
   { value: "cash", label: "Cash" },
-  { value: "bank", label: "Bank Transfer" },
+  { value: "bank_transfer", label: "Bank Transfer" },
   { value: "upi", label: "UPI" },
   { value: "cheque", label: "Cheque" },
-  { value: "card", label: "Card" },
-  { value: "online", label: "Online" },
-  { value: "neft", label: "NEFT" },
-  { value: "rtgs", label: "RTGS" },
-  { value: "imps", label: "IMPS" },
+  { value: "credit_card", label: "Credit Card" },
+  { value: "other", label: "Other" },
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -55,7 +52,7 @@ function PaymentFormInner({ invoiceId: prefillInvoiceId, onSaved, onCancel }) {
     clientId: "",
     finalInvoiceId: prefillInvoiceId || "",
     amount: "",
-    paymentMode: "bank",
+   paymentMode: "bank_transfer",
     paymentDate: new Date().toISOString().slice(0, 10),
     referenceNumber: "",
     notes: "",
@@ -397,12 +394,13 @@ function PaymentFormInner({ invoiceId: prefillInvoiceId, onSaved, onCancel }) {
               <FiInfo size={16} />
               <span>Mode Details</span>
             </div>
-            <p style={modeInfoTextS}>
+      <p style={modeInfoTextS}>
               {form.paymentMode === "cheque" && "Enter cheque number in Reference Number field."}
-              {["upi", "neft", "rtgs", "imps", "online"].includes(form.paymentMode) && "Enter UTR / Transaction ID in Reference Number field."}
-              {form.paymentMode === "bank" && "Enter bank transfer reference in Reference Number field."}
-              {form.paymentMode === "card" && "Enter card transaction reference in Reference Number field."}
+              {form.paymentMode === "upi" && "Enter UTR / Transaction ID in Reference Number field."}
+              {form.paymentMode === "bank_transfer" && "Enter bank transfer reference in Reference Number field."}
+              {form.paymentMode === "credit_card" && "Enter card transaction reference in Reference Number field."}
               {form.paymentMode === "cash" && "No reference required for cash payments."}
+              {form.paymentMode === "other" && "Add any relevant reference in the field above, if applicable."}
             </p>
           </div>
         </div>
