@@ -413,7 +413,7 @@ const drawBillTo = (doc, client, yStart) => {
 
   if (client?.gstNumber) {
     doc.fillColor(TEXT_MID).fontSize(8.5)
-       .text(`GST: ${client.gstNumber}`, 52, yStart + 70);
+       .text(`GST: ${client.gstNumber}`, 52, yStart + 80);
   }
 };
 
