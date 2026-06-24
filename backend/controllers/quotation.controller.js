@@ -14,6 +14,26 @@ import { sendEmail, emailTemplates } from '../services/email.service.js'; // FIX
 import { generateDocNumber } from '../utils/numberGenrate.js';          // FIX: correct filename numberGenerator
 
 
+// ─── Helper: Build item data with computed totalPrice ─────────────
+const buildItemsData = (items, quotationId) => {
+    return items.map((item, i) => {
+        const unitPrice = parseFloat(item.unitPrice) || 0;
+        const quantity  = parseFloat(item.quantity) || 0;
+        const gstAmount = parseFloat(item.gstAmount) || 0;
+        const discount  = parseFloat(item.discount) || 0;
+
+        const totalPrice = (unitPrice * quantity) + gstAmount - discount;
+
+        return {
+            ...item,
+            quotationId,
+            sortOrder: i,
+            totalPrice
+        };
+    });
+};
+
+
 // ─── Get All Quotations ───────────────────────────────────────────
 export const getQuotations = async (req, res, next) => {
     try {
@@ -89,11 +109,7 @@ export const createQuotation = async (req, res, next) => {
         const quotation = await Quotation.create(quotationData, { transaction: t });
 
         if (items && items.length > 0) {
-            const itemsData = items.map((item, i) => ({
-                ...item,
-                quotationId: quotation.id,
-                sortOrder: i
-            }));
+            const itemsData = buildItemsData(items, quotation.id);
             await QuotationItem.bulkCreate(itemsData, { transaction: t });
         }
 
@@ -153,11 +169,7 @@ export const updateQuotation = async (req, res, next) => {
                 transaction: t,
             });
 
-            const itemsData = items.map((item, i) => ({
-                ...item,
-                quotationId: quotation.id,
-                sortOrder: i
-            }));
+            const itemsData = buildItemsData(items, quotation.id);
 
             await QuotationItem.bulkCreate(itemsData, { transaction: t });
             await recalculateTotals(quotation.id, t);
